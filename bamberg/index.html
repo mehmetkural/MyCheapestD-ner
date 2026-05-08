@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Döner Rangliste Bamberg</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f6f3ef; --card: #fff; --border: #ede9e3;
+    --text: #1c1a18; --muted: #9a9590; --accent: #c8773a;
+    --shadow: 0 1px 4px rgba(0,0,0,.07); --shadow-hover: 0 6px 18px rgba(0,0,0,.11);
+    --rb-def-bg: #f0ede8; --rb-def-col: #777; --rb-2-bg: #e0e0e0; --rb-2-col: #444;
+    --badge-bg: #fdf0e6; --badge-border: #f5d9bc;
+    --foot: #ccc; --popup-bg: #fff; --popup-text: #1c1a18; --popup-addr: #888;
+  }
+
+  [data-theme="dark"] {
+    --bg: #111009; --card: #1c1a16; --border: #2c2922;
+    --text: #ede9e2; --muted: #7a7368; --accent: #e08840;
+    --shadow: 0 1px 6px rgba(0,0,0,.35); --shadow-hover: 0 6px 22px rgba(0,0,0,.5);
+    --rb-def-bg: #2a2720; --rb-def-col: #aaa; --rb-2-bg: #3a3830; --rb-2-col: #ccc;
+    --badge-bg: #2a1e12; --badge-border: #4a3020;
+    --foot: #44403a; --popup-bg: #1c1a16; --popup-text: #ede9e2; --popup-addr: #7a7368;
+  }
+
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; transition: background .25s, color .25s; }
+
+  header { background: var(--card); border-bottom: 1px solid var(--border); padding: 22px 20px 0; transition: background .25s, border-color .25s; }
+  .header-inner { max-width: 680px; margin: 0 auto; }
+  .header-top { display: flex; align-items: center; gap: 8px; }
+  h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.03em; flex: 1; }
+
+  .badge { font-size: .7rem; font-weight: 600; background: var(--badge-bg); color: var(--accent); border: 1px solid var(--badge-border); border-radius: 20px; padding: 2px 8px; transition: background .25s, border-color .25s; }
+
+  .lang-switcher { display: flex; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; flex-shrink: 0; transition: border-color .25s; }
+  .lang-btn { padding: 4px 9px; background: none; border: none; cursor: pointer; font-size: .68rem; font-weight: 700; color: var(--muted); transition: background .15s, color .15s; }
+  .lang-btn + .lang-btn { border-left: 1px solid var(--border); }
+  .lang-btn.active { background: var(--accent); color: #fff; }
+  .lang-btn:hover:not(.active) { color: var(--text); }
+
+  #theme-toggle { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--muted); transition: background .2s, border-color .2s, transform .15s; }
+  #theme-toggle:hover { background: var(--bg); transform: rotate(20deg); color: var(--accent); }
+
+  .subtitle { font-size: .8rem; color: var(--muted); margin-top: 3px; transition: color .25s; }
+
+  /* city nav */
+  .city-nav { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-top: 7px; font-size: .72rem; }
+  .city-link { color: var(--muted); text-decoration: none; font-weight: 500; transition: color .15s; }
+  .city-link:hover, .city-link.here { color: var(--accent); font-weight: 700; }
+  .city-sep { color: var(--border); }
+
+  .tabs { display: flex; margin-top: 14px; gap: 2px; }
+  .tab-btn { padding: 9px 18px; background: none; border: none; cursor: pointer; font-size: .875rem; font-weight: 500; color: var(--muted); border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+  .tab-btn:hover:not(.active) { color: var(--text); opacity: .7; }
+
+  .panel { display: none; } .panel.active { display: block; }
+
+  #panel-list .inner { max-width: 680px; margin: 0 auto; padding: 20px; }
+  .list { display: flex; flex-direction: column; gap: 9px; }
+
+  .item { background: var(--card); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow); transition: box-shadow .2s, transform .15s, background .25s; }
+  .item:hover { box-shadow: var(--shadow-hover); transform: translateY(-1px); }
+
+  .rank-bubble { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .8rem; flex-shrink: 0; }
+  .rb-1 { background: #FFD700; color: #6b4c00; } .rb-2 { background: var(--rb-2-bg); color: var(--rb-2-col); } .rb-3 { background: #E8A070; color: #fff; } .rb-def { background: var(--rb-def-bg); color: var(--rb-def-col); }
+
+  .info { flex: 1; min-width: 0; }
+  .name { font-weight: 600; font-size: .92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .addr-link { font-size: .77rem; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 3px; margin-top: 2px; transition: color .15s; }
+  .addr-link:hover { color: var(--accent); text-decoration: underline; }
+
+  .price-col { text-align: right; flex-shrink: 0; }
+  .price-val { font-weight: 800; font-size: 1.05rem; letter-spacing: -.03em; }
+  .est-label { font-size: .62rem; color: var(--foot); display: block; margin-top: 1px; transition: color .25s; }
+
+  .pv-1{color:#1a9e50}.pv-2{color:#2aad50}.pv-3{color:#44b840}.pv-4{color:#72b820}.pv-5{color:#9cb820}.pv-6{color:#c89820}.pv-7{color:#c87820}.pv-8{color:#c85e20}.pv-9{color:#c84420}.pv-10{color:#c82a20}
+  [data-theme="dark"] .pv-1{color:#30d468}[data-theme="dark"] .pv-2{color:#44dd68}[data-theme="dark"] .pv-3{color:#66e055}[data-theme="dark"] .pv-4{color:#99e030}[data-theme="dark"] .pv-5{color:#c8e028}[data-theme="dark"] .pv-6{color:#e8c030}[data-theme="dark"] .pv-7{color:#e89830}[data-theme="dark"] .pv-8{color:#e87830}[data-theme="dark"] .pv-9{color:#e85530}[data-theme="dark"] .pv-10{color:#e83530}
+
+  .foot-note { font-size: .72rem; color: var(--foot); text-align: center; margin-top: 14px; line-height: 1.5; transition: color .25s; }
+
+  #panel-map .inner { max-width: 680px; margin: 0 auto; padding: 16px 20px 20px; }
+  #map { height: calc(100vh - 172px); min-height: 360px; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow); transition: border-color .25s; }
+  .map-note { font-size: .72rem; color: var(--foot); text-align: center; margin-top: 8px; transition: color .25s; }
+
+  #panel-info .inner { max-width: 680px; margin: 0 auto; padding: 20px; }
+  .info-section { margin-bottom: 28px; }
+  .section-title { font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; transition: color .25s; }
+
+  .faq-list { display: flex; flex-direction: column; gap: 8px; }
+  .faq-item { background: var(--card); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; transition: background .25s; }
+  .faq-q { width: 100%; background: none; border: none; cursor: pointer; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: .9rem; font-weight: 600; color: var(--text); text-align: left; transition: color .15s; }
+  .faq-q:hover { color: var(--accent); }
+  .faq-chevron { flex-shrink: 0; color: var(--muted); transition: transform .2s, color .15s; font-style: normal; font-size: 1rem; }
+  .faq-item.open .faq-chevron { transform: rotate(45deg); color: var(--accent); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height .25s ease, padding .2s; font-size: .85rem; color: var(--muted); line-height: 1.6; padding: 0 16px; }
+  .faq-item.open .faq-a { max-height: 200px; padding: 0 16px 14px; }
+
+  .contact-card { background: var(--card); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); transition: background .25s; }
+  .contact-card h3 { font-size: .95rem; font-weight: 700; margin-bottom: 6px; }
+  .contact-desc { font-size: .83rem; color: var(--muted); line-height: 1.5; margin-bottom: 14px; transition: color .25s; }
+  .email-btn { display: inline-flex; align-items: center; gap: 7px; background: var(--accent); color: #fff; border: none; border-radius: 10px; padding: 9px 16px; font-size: .85rem; font-weight: 600; text-decoration: none; transition: opacity .15s, transform .1s; }
+  .email-btn:hover { opacity: .88; transform: translateY(-1px); }
+
+  .leaflet-popup-content-wrapper { border-radius: 12px !important; box-shadow: 0 4px 20px rgba(0,0,0,.2) !important; background: var(--popup-bg) !important; color: var(--popup-text) !important; }
+  .leaflet-popup-tip { background: var(--popup-bg) !important; }
+  .leaflet-popup-content { margin: 12px 14px !important; }
+  .popup-inner { font-family: -apple-system, sans-serif; min-width: 170px; color: var(--popup-text); }
+  .popup-name { font-weight: 700; font-size: .9rem; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+  .popup-rank { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 800; flex-shrink: 0; color: #fff; }
+  .popup-price { font-size: 1.15rem; font-weight: 800; margin: 4px 0 6px; }
+  .popup-addr { font-size: .75rem; color: var(--popup-addr); text-decoration: none; display: flex; align-items: center; gap: 3px; }
+  .popup-addr:hover { color: var(--accent); }
+
+  .geiz-footer { text-align: center; padding: 18px 20px 14px; font-size: .6rem; font-style: italic; letter-spacing: .1em; color: var(--border); transition: color .25s; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-top">
+      <h1>Döner Rangliste <span style="color:var(--accent)">Bamberg</span></h1>
+      <span class="badge">Top 10</span>
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="tr" onclick="setLang('tr')">TR</button>
+      </div>
+      <button id="theme-toggle" onclick="toggleTheme()">
+        <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+    <p class="subtitle" data-i18n="subtitle"></p>
+    <nav class="city-nav">
+      <a href="../" class="city-link" data-i18n="all_cities"></a>
+      <span class="city-sep">·</span>
+      <a href="../bamberg/" class="city-link here">Bamberg</a>
+      <span class="city-sep">·</span>
+      <a href="../nurnberg/" class="city-link">Nürnberg</a>
+      <span class="city-sep">·</span>
+      <a href="../wurzburg/" class="city-link">Würzburg</a>
+      <span class="city-sep">·</span>
+      <a href="../erlangen/" class="city-link">Erlangen</a>
+    </nav>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('list')">&#9776;&nbsp;<span data-i18n="tab_list"></span></button>
+      <button class="tab-btn" onclick="switchTab('map')">&#9679;&nbsp;<span data-i18n="tab_map"></span></button>
+      <button class="tab-btn" onclick="switchTab('info')">&#9432;&nbsp;<span data-i18n="tab_info"></span></button>
+    </div>
+  </div>
+</header>
+
+<div id="panel-list" class="panel active">
+  <div class="inner">
+    <div class="list" id="list-root"></div>
+    <p class="foot-note" data-i18n-html="foot"></p>
+  </div>
+</div>
+
+<div id="panel-map" class="panel">
+  <div class="inner">
+    <div id="map"></div>
+    <p class="map-note" data-i18n="map_note"></p>
+  </div>
+</div>
+
+<div id="panel-info" class="panel">
+  <div class="inner">
+    <div class="info-section">
+      <p class="section-title" data-i18n="faq_title"></p>
+      <div class="faq-list" id="faq-root"></div>
+    </div>
+    <div class="info-section">
+      <p class="section-title" data-i18n="contact_section_title"></p>
+      <div class="contact-card">
+        <h3 data-i18n="contact_title"></h3>
+        <p class="contact-desc" data-i18n="contact_desc"></p>
+        <a id="email-btn" class="email-btn" href="#" rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span data-i18n="email_btn"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="geiz-footer">Geiz ist geil.</footer>
+
+<script>
+const DATA = [
+  { rank:1,  name:"Bamberger Döner",        price:6.50, est:false, address:"Luitpoldstraße 39, 96052 Bamberg",        lat:49.8946, lng:10.9060 },
+  { rank:2,  name:"Buhara",                  price:6.90, est:true,  address:"Fleischstraße 1, 96047 Bamberg",           lat:49.8993, lng:10.9028 },
+  { rank:3,  name:"Original Berliner Döner", price:6.90, est:true,  address:"Luitpoldstraße 36, 96052 Bamberg",         lat:49.8948, lng:10.9055 },
+  { rank:4,  name:"Döner-Express",           price:7.00, est:false, address:"Ludwigstraße 6, 96052 Bamberg",            lat:49.9015, lng:10.9012 },
+  { rank:5,  name:"Euro Döner",              price:7.00, est:true,  address:"Pödeldorfer Str. 146, 96050 Bamberg",      lat:49.9053, lng:10.9246 },
+  { rank:6,  name:"King Kebap Haus",         price:7.50, est:true,  address:"Luitpoldstraße 48, 96052 Bamberg",         lat:49.8942, lng:10.9064 },
+  { rank:7,  name:"Antep Döner",             price:7.50, est:true,  address:"Obere Königsstraße 14, 96047 Bamberg",     lat:49.8999, lng:10.8988 },
+  { rank:8,  name:"Imbiss Marmaris",         price:7.50, est:true,  address:"Obere Königstraße 9, 96052 Bamberg",       lat:49.9001, lng:10.8993 },
+  { rank:9,  name:"Orient Imbiss",           price:8.00, est:true,  address:"Würzburger Str. 55, 96049 Bamberg",        lat:49.8826, lng:10.8964 },
+  { rank:10, name:"BamBiss Orient Bamberg",  price:8.00, est:false, address:"Memmelsdorfer Str. 181, 96052 Bamberg",    lat:49.9097, lng:10.9130 },
+];
+
+const MAP_CENTER = [49.897, 10.906];
+const CONTACT_EMAIL = 'info@guenstigerdoener.de';
+
+const STRINGS = {
+  de: {
+    subtitle:'Von günstig bis teuer · Stand Mai 2026', tab_list:'Rangliste', tab_map:'Karte', tab_info:'Info', all_cities:'← Alle Städte',
+    foot:'Preise ohne ~ von doeneratlas.de bestätigt · ~ = geschätzter Preis<br>Adresse anklicken öffnet Google Maps',
+    map_note:'Pin-Größe entspricht der Platzierung · Nr. 1 = größter Pin · Klicken für Details', estimated:'~geschätzt',
+    faq_title:'Häufige Fragen',
+    faq:[
+      {q:'Woher kommen die Preise?', a:'Bestätigte Preise (ohne ~) stammen von doeneratlas.de. Die übrigen sind Schätzungen auf Basis regionaler Durchschnittswerte.'},
+      {q:'Wie aktuell sind die Daten?', a:'Letzte Aktualisierung: Mai 2026. Bei Abweichungen gerne melden!'},
+      {q:'Was bedeutet das ~-Symbol?', a:'Geschätzte Preise, die nicht offiziell bestätigt wurden. Der tatsächliche Preis kann abweichen.'},
+      {q:'Wie kann ich einen Laden vorschlagen?', a:'E-Mail mit Name, Adresse und aktuellem Preis schicken. Wir prüfen und ergänzen die Liste.'},
+    ],
+    contact_section_title:'Preisupdate', contact_title:'Preis melden oder Laden vorschlagen',
+    contact_desc:'Falscher Preis? Günstiger Geheimtipp? Schreib uns — wir aktualisieren die Liste so schnell wie möglich.',
+    email_subject:'Döner Preis Update – Bamberg', email_body:'Restaurant: \nAdresse: \nAktueller Preis: \n', email_btn:'E-Mail senden',
+  },
+  en: {
+    subtitle:'Cheapest to most expensive · May 2026', tab_list:'Ranking', tab_map:'Map', tab_info:'Info', all_cities:'← All cities',
+    foot:'Prices without ~ confirmed by doeneratlas.de · ~ = estimated<br>Click an address to open Google Maps',
+    map_note:'Pin size reflects ranking · No. 1 = largest pin · Click for details', estimated:'~estimated',
+    faq_title:'FAQ',
+    faq:[
+      {q:'Where do the prices come from?', a:'Confirmed prices (without ~) come from doeneratlas.de. The rest are estimates based on regional averages.'},
+      {q:'How up to date is the list?', a:'Last updated: May 2026. Report any discrepancies!'},
+      {q:'What does the ~ symbol mean?', a:'Estimated prices not officially confirmed. The actual price may differ.'},
+      {q:'How can I suggest a new place?', a:'Send an email with name, address, and price. We\'ll review and add it.'},
+    ],
+    contact_section_title:'Price Update', contact_title:'Report a price or suggest a place',
+    contact_desc:'Wrong price? Hidden gem? Write to us — we\'ll update the list asap.',
+    email_subject:'Döner Price Update – Bamberg', email_body:'Restaurant: \nAddress: \nCurrent price: \n', email_btn:'Send email',
+  },
+  tr: {
+    subtitle:'En ucuzdan en pahalıya · Mayıs 2026', tab_list:'Sıralama', tab_map:'Harita', tab_info:'Bilgi', all_cities:'← Tüm şehirler',
+    foot:'~ olmayan fiyatlar doeneratlas.de\'den onaylı · ~ = tahmini fiyat<br>Adrese tıklayınca Google Maps açılır',
+    map_note:'Pin boyutu sıralamayı gösterir · 1 = en büyük pin · Detay için tıkla', estimated:'~tahmini',
+    faq_title:'Sık Sorulan Sorular',
+    faq:[
+      {q:'Fiyatlar nereden geliyor?', a:'~ işareti olmayan fiyatlar doeneratlas.de\'den alınmaktadır. Diğerleri tahmindir.'},
+      {q:'Veriler ne kadar güncel?', a:'Son güncelleme: Mayıs 2026. Farklılık görürsen bildir!'},
+      {q:'~ sembolü ne anlama geliyor?', a:'Resmi olarak teyit edilmemiş tahmini fiyatları gösterir.'},
+      {q:'Yeni bir yer nasıl önerebilirim?', a:'İsim, adres ve fiyatla e-posta gönder. İnceleyip ekleyelim.'},
+    ],
+    contact_section_title:'Fiyat Güncelleme', contact_title:'Fiyat bildir veya yer öner',
+    contact_desc:'Yanlış fiyat mı? Gizli ucuz bir yer mi? Bize yaz — en kısa sürede güncelleyelim.',
+    email_subject:'Döner Fiyat Güncellemesi – Bamberg', email_body:'Restoran: \nAdres: \nGüncel fiyat: \n', email_btn:'E-posta gönder',
+  },
+};
+
+let mapReady=false, leafletMap=null, tileLayer=null, darkMode=false, currentLang='de';
+
+function applyTheme(dark) {
+  darkMode=dark;
+  document.documentElement.setAttribute('data-theme', dark?'dark':'light');
+  document.getElementById('icon-sun').style.display  = dark?'block':'none';
+  document.getElementById('icon-moon').style.display = dark?'none':'block';
+  if(mapReady) swapTiles(dark);
+}
+function toggleTheme() { const n=!darkMode; localStorage.setItem('theme',n?'dark':'light'); applyTheme(n); }
+
+function setLang(lang) {
+  currentLang=lang; localStorage.setItem('lang',lang); document.documentElement.lang=lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  const s=STRINGS[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=s[el.dataset.i18n]??'');
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>el.innerHTML=s[el.dataset.i18nHtml]??'');
+  document.querySelectorAll('.est-label').forEach(el=>el.textContent=s.estimated);
+  const subj=encodeURIComponent(s.email_subject), body=encodeURIComponent(s.email_body);
+  document.getElementById('email-btn').href=`mailto:${CONTACT_EMAIL}?subject=${subj}&body=${body}`;
+  renderFaq(lang);
+}
+
+function renderFaq(lang) {
+  const r=document.getElementById('faq-root'); r.innerHTML='';
+  STRINGS[lang].faq.forEach((it,i)=>r.insertAdjacentHTML('beforeend',`
+    <div class="faq-item" id="faq-${i}">
+      <button class="faq-q" onclick="toggleFaq(${i})"><span>${it.q}</span><i class="faq-chevron">+</i></button>
+      <div class="faq-a">${it.a}</div>
+    </div>`));
+}
+function toggleFaq(i) { document.getElementById(`faq-${i}`).classList.toggle('open'); }
+
+(function(){
+  const st=localStorage.getItem('theme');
+  applyTheme(st?st==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const sl=localStorage.getItem('lang'), bl=navigator.language.slice(0,2);
+  setLang(sl||(['de','en','tr'].includes(bl)?bl:'de'));
+})();
+
+const PIN=`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+const root=document.getElementById('list-root');
+DATA.forEach(r=>{
+  const url=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.address)}`;
+  const rb=r.rank<=3?`rb-${r.rank}`:'rb-def';
+  root.insertAdjacentHTML('beforeend',`
+    <div class="item">
+      <div class="rank-bubble ${rb}">${r.rank}</div>
+      <div class="info">
+        <div class="name">${r.name}</div>
+        <a href="${url}" target="_blank" rel="noopener" class="addr-link">${PIN} ${r.address}</a>
+      </div>
+      <div class="price-col">
+        <span class="price-val pv-${r.rank}">${r.price.toFixed(2).replace('.',',')} €</span>
+        ${r.est?`<span class="est-label">${STRINGS[currentLang].estimated}</span>`:''}
+      </div>
+    </div>`);
+});
+
+const TILES={
+  light:{url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', attr:'&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'},
+  dark: {url:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', attr:'&copy; OpenStreetMap &copy; <a href="https://carto.com/">CARTO</a>'},
+};
+
+function swapTiles(dark) {
+  if(!leafletMap) return;
+  if(tileLayer) leafletMap.removeLayer(tileLayer);
+  const t=dark?TILES.dark:TILES.light;
+  tileLayer=L.tileLayer(t.url,{attribution:t.attr,maxZoom:19});
+  tileLayer.addTo(leafletMap); tileLayer.bringToBack();
+}
+
+function initMap() {
+  if(mapReady) return; mapReady=true;
+  leafletMap=L.map('map',{zoomControl:true}).setView(MAP_CENTER,13);
+  swapTiles(darkMode);
+  const SMAX=52,SMIN=28;
+  DATA.forEach(r=>{
+    const ratio=1-(r.rank-1)/9, size=Math.round(SMIN+ratio*(SMAX-SMIN));
+    const hue=Math.round(118*ratio), stroke=`hsl(${hue},65%,30%)`, fill=`hsl(${hue},65%,48%)`;
+    const fs=Math.round(size*0.42);
+    const url=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.address)}`;
+    const icon=L.divIcon({className:'',html:`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${fill};border:2.5px solid ${stroke};display:flex;align-items:center;justify-content:center;font-family:-apple-system,sans-serif;font-weight:800;font-size:${fs}px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3);text-shadow:0 1px 2px rgba(0,0,0,.35);cursor:pointer">${r.rank}</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2],popupAnchor:[0,-(size/2+4)]});
+    const popup=`<div class="popup-inner"><div class="popup-name"><span class="popup-rank" style="background:${fill}">${r.rank}</span>${r.name}</div><div class="popup-price" style="color:${stroke}">${r.price.toFixed(2).replace('.',',')} €${r.est?' <span style="font-size:.6rem;opacity:.5;">~</span>':''}</div><a href="${url}" target="_blank" rel="noopener" class="popup-addr">${PIN} ${r.address}</a></div>`;
+    L.marker([r.lat,r.lng],{icon}).bindPopup(popup).addTo(leafletMap);
+  });
+}
+
+function switchTab(tab) {
+  const tabs=['list','map','info'];
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',tabs[i]===tab));
+  tabs.forEach(t=>document.getElementById(`panel-${t}`).classList.toggle('active',t===tab));
+  if(tab==='map') setTimeout(initMap,80);
+}
+</script>
+</body>
+</html>
