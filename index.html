@@ -9,194 +9,122 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ── LIGHT ── */
   :root {
-    --bg: #f6f3ef;
-    --card: #ffffff;
-    --border: #ede9e3;
-    --text: #1c1a18;
-    --muted: #9a9590;
-    --accent: #c8773a;
+    --bg: #f6f3ef; --card: #ffffff; --border: #ede9e3;
+    --text: #1c1a18; --muted: #9a9590; --accent: #c8773a;
     --shadow: 0 1px 4px rgba(0,0,0,.07);
     --shadow-hover: 0 6px 18px rgba(0,0,0,.11);
-    --rb-def-bg: #f0ede8;
-    --rb-def-col: #777;
-    --rb-2-bg: #e0e0e0;
-    --rb-2-col: #444;
-    --badge-bg: #fdf0e6;
-    --badge-border: #f5d9bc;
-    --foot: #ccc;
-    --popup-bg: #fff;
-    --popup-text: #1c1a18;
-    --popup-addr: #888;
+    --rb-def-bg: #f0ede8; --rb-def-col: #777;
+    --rb-2-bg: #e0e0e0; --rb-2-col: #444;
+    --badge-bg: #fdf0e6; --badge-border: #f5d9bc;
+    --foot: #ccc; --popup-bg: #fff;
+    --popup-text: #1c1a18; --popup-addr: #888;
   }
 
-  /* ── DARK ── */
   [data-theme="dark"] {
-    --bg: #111009;
-    --card: #1c1a16;
-    --border: #2c2922;
-    --text: #ede9e2;
-    --muted: #7a7368;
-    --accent: #e08840;
+    --bg: #111009; --card: #1c1a16; --border: #2c2922;
+    --text: #ede9e2; --muted: #7a7368; --accent: #e08840;
     --shadow: 0 1px 6px rgba(0,0,0,.35);
     --shadow-hover: 0 6px 22px rgba(0,0,0,.5);
-    --rb-def-bg: #2a2720;
-    --rb-def-col: #aaa;
-    --rb-2-bg: #3a3830;
-    --rb-2-col: #ccc;
-    --badge-bg: #2a1e12;
-    --badge-border: #4a3020;
-    --foot: #44403a;
-    --popup-bg: #1c1a16;
-    --popup-text: #ede9e2;
-    --popup-addr: #7a7368;
+    --rb-def-bg: #2a2720; --rb-def-col: #aaa;
+    --rb-2-bg: #3a3830; --rb-2-col: #ccc;
+    --badge-bg: #2a1e12; --badge-border: #4a3020;
+    --foot: #44403a; --popup-bg: #1c1a16;
+    --popup-text: #ede9e2; --popup-addr: #7a7368;
   }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    transition: background .25s, color .25s;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; transition: background .25s, color .25s;
   }
 
-  /* ── HEADER ── */
   header {
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
-    padding: 22px 20px 0;
-    transition: background .25s, border-color .25s;
+    background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 22px 20px 0; transition: background .25s, border-color .25s;
   }
 
-  .header-inner {
-    max-width: 680px;
-    margin: 0 auto;
-  }
+  .header-inner { max-width: 680px; margin: 0 auto; }
 
-  .header-top {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .header-top { display: flex; align-items: center; gap: 8px; }
 
-  h1 {
-    font-size: 1.35rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    flex: 1;
-  }
+  h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.03em; flex: 1; }
 
   .badge {
-    font-size: 0.7rem;
-    font-weight: 600;
-    background: var(--badge-bg);
-    color: var(--accent);
-    border: 1px solid var(--badge-border);
-    border-radius: 20px;
-    padding: 2px 8px;
-    letter-spacing: 0.02em;
+    font-size: 0.7rem; font-weight: 600;
+    background: var(--badge-bg); color: var(--accent);
+    border: 1px solid var(--badge-border); border-radius: 20px;
+    padding: 2px 8px; letter-spacing: 0.02em;
     transition: background .25s, border-color .25s;
   }
 
-  /* ── DARK TOGGLE ── */
+  /* ── LANG SWITCHER ── */
+  .lang-switcher {
+    display: flex; border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden; flex-shrink: 0;
+    transition: border-color .25s;
+  }
+
+  .lang-btn {
+    padding: 4px 9px; background: none; border: none;
+    cursor: pointer; font-size: 0.68rem; font-weight: 700;
+    color: var(--muted); letter-spacing: 0.03em;
+    transition: background .15s, color .15s;
+  }
+
+  .lang-btn + .lang-btn { border-left: 1px solid var(--border); }
+
+  .lang-btn.active { background: var(--accent); color: #fff; }
+  .lang-btn:hover:not(.active) { color: var(--text); }
+
+  /* ── THEME TOGGLE ── */
   #theme-toggle {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--card);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--card);
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; color: var(--muted);
     transition: background .2s, border-color .2s, transform .15s;
-    flex-shrink: 0;
-    color: var(--muted);
   }
 
-  #theme-toggle:hover {
-    background: var(--bg);
-    transform: rotate(20deg);
-    color: var(--accent);
-  }
+  #theme-toggle:hover { background: var(--bg); transform: rotate(20deg); color: var(--accent); }
 
-  .subtitle {
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-top: 3px;
-    transition: color .25s;
-  }
+  .subtitle { font-size: 0.8rem; color: var(--muted); margin-top: 3px; transition: color .25s; }
 
   /* ── TABS ── */
-  .tabs {
-    display: flex;
-    margin-top: 18px;
-    gap: 2px;
-  }
+  .tabs { display: flex; margin-top: 18px; gap: 2px; }
 
   .tab-btn {
-    padding: 9px 18px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--muted);
+    padding: 9px 18px; background: none; border: none; cursor: pointer;
+    font-size: 0.875rem; font-weight: 500; color: var(--muted);
     border-bottom: 2px solid transparent;
-    transition: color .15s, border-color .15s;
-    letter-spacing: -0.01em;
+    transition: color .15s, border-color .15s; letter-spacing: -0.01em;
   }
 
-  .tab-btn.active {
-    color: var(--text);
-    border-bottom-color: var(--accent);
-  }
-
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
   .tab-btn:hover:not(.active) { color: var(--text); opacity: .7; }
 
   /* ── PANELS ── */
   .panel { display: none; }
   .panel.active { display: block; }
 
-  /* ── LIST PANEL ── */
-  #panel-list .inner {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 20px;
-  }
+  /* ── LIST ── */
+  #panel-list .inner { max-width: 680px; margin: 0 auto; padding: 20px; }
 
   .list { display: flex; flex-direction: column; gap: 9px; }
 
   .item {
-    background: var(--card);
-    border-radius: 14px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    background: var(--card); border-radius: 14px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px;
     box-shadow: var(--shadow);
     transition: box-shadow .2s, transform .15s, background .25s;
-    cursor: default;
   }
 
-  .item:hover {
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-1px);
-  }
+  .item:hover { box-shadow: var(--shadow-hover); transform: translateY(-1px); }
 
-  /* rank bubble */
   .rank-bubble {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 0.8rem;
-    flex-shrink: 0;
-    letter-spacing: -0.02em;
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.8rem; flex-shrink: 0;
   }
 
   .rb-1   { background: #FFD700; color: #6b4c00; }
@@ -204,111 +132,67 @@
   .rb-3   { background: #E8A070; color: #fff; }
   .rb-def { background: var(--rb-def-bg); color: var(--rb-def-col); }
 
-  /* info */
   .info { flex: 1; min-width: 0; }
 
   .name {
-    font-weight: 600;
-    font-size: 0.92rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-weight: 600; font-size: 0.92rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
 
   .addr-link {
-    font-size: 0.77rem;
-    color: var(--muted);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    margin-top: 2px;
-    transition: color .15s;
+    font-size: 0.77rem; color: var(--muted); text-decoration: none;
+    display: inline-flex; align-items: center; gap: 3px;
+    margin-top: 2px; transition: color .15s;
   }
 
   .addr-link:hover { color: var(--accent); text-decoration: underline; }
 
-  /* price */
   .price-col { text-align: right; flex-shrink: 0; }
 
-  .price-val {
-    font-weight: 800;
-    font-size: 1.05rem;
-    letter-spacing: -0.03em;
-  }
+  .price-val { font-weight: 800; font-size: 1.05rem; letter-spacing: -0.03em; }
 
   .est-label {
-    font-size: 0.62rem;
-    color: var(--foot);
-    display: block;
-    margin-top: 1px;
-    transition: color .25s;
+    font-size: 0.62rem; color: var(--foot);
+    display: block; margin-top: 1px; transition: color .25s;
   }
 
-  /* price gradient by rank */
-  .pv-1  { color: #1a9e50; }
-  .pv-2  { color: #2aad50; }
-  .pv-3  { color: #44b840; }
-  .pv-4  { color: #72b820; }
-  .pv-5  { color: #9cb820; }
-  .pv-6  { color: #c89820; }
-  .pv-7  { color: #c87820; }
-  .pv-8  { color: #c85e20; }
-  .pv-9  { color: #c84420; }
-  .pv-10 { color: #c82a20; }
+  .pv-1  { color: #1a9e50; } .pv-2  { color: #2aad50; }
+  .pv-3  { color: #44b840; } .pv-4  { color: #72b820; }
+  .pv-5  { color: #9cb820; } .pv-6  { color: #c89820; }
+  .pv-7  { color: #c87820; } .pv-8  { color: #c85e20; }
+  .pv-9  { color: #c84420; } .pv-10 { color: #c82a20; }
 
-  [data-theme="dark"] .pv-1  { color: #30d468; }
-  [data-theme="dark"] .pv-2  { color: #44dd68; }
-  [data-theme="dark"] .pv-3  { color: #66e055; }
-  [data-theme="dark"] .pv-4  { color: #99e030; }
-  [data-theme="dark"] .pv-5  { color: #c8e028; }
-  [data-theme="dark"] .pv-6  { color: #e8c030; }
-  [data-theme="dark"] .pv-7  { color: #e89830; }
-  [data-theme="dark"] .pv-8  { color: #e87830; }
-  [data-theme="dark"] .pv-9  { color: #e85530; }
-  [data-theme="dark"] .pv-10 { color: #e83530; }
+  [data-theme="dark"] .pv-1  { color: #30d468; } [data-theme="dark"] .pv-2  { color: #44dd68; }
+  [data-theme="dark"] .pv-3  { color: #66e055; } [data-theme="dark"] .pv-4  { color: #99e030; }
+  [data-theme="dark"] .pv-5  { color: #c8e028; } [data-theme="dark"] .pv-6  { color: #e8c030; }
+  [data-theme="dark"] .pv-7  { color: #e89830; } [data-theme="dark"] .pv-8  { color: #e87830; }
+  [data-theme="dark"] .pv-9  { color: #e85530; } [data-theme="dark"] .pv-10 { color: #e83530; }
 
   .foot-note {
-    font-size: 0.72rem;
-    color: var(--foot);
-    text-align: center;
-    margin-top: 14px;
-    line-height: 1.5;
-    transition: color .25s;
+    font-size: 0.72rem; color: var(--foot); text-align: center;
+    margin-top: 14px; line-height: 1.5; transition: color .25s;
   }
 
-  /* ── MAP PANEL ── */
-  #panel-map .inner {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 16px 20px 20px;
-  }
+  /* ── MAP ── */
+  #panel-map .inner { max-width: 680px; margin: 0 auto; padding: 16px 20px 20px; }
 
   #map {
-    height: calc(100vh - 158px);
-    min-height: 380px;
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
+    height: calc(100vh - 158px); min-height: 380px;
+    border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--border); box-shadow: var(--shadow);
     transition: border-color .25s;
   }
 
   .map-note {
-    font-size: 0.72rem;
-    color: var(--foot);
-    text-align: center;
-    margin-top: 8px;
-    transition: color .25s;
+    font-size: 0.72rem; color: var(--foot);
+    text-align: center; margin-top: 8px; transition: color .25s;
   }
 
-  /* leaflet popup */
   .leaflet-popup-content-wrapper {
     border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0,0,0,.2) !important;
     background: var(--popup-bg) !important;
     color: var(--popup-text) !important;
-    transition: background .25s;
   }
 
   .leaflet-popup-tip { background: var(--popup-bg) !important; }
@@ -316,23 +200,16 @@
 
   .popup-inner {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    min-width: 170px;
-    color: var(--popup-text);
+    min-width: 170px; color: var(--popup-text);
   }
-  .popup-name {
-    font-weight: 700; font-size: 0.9rem; margin-bottom: 5px;
-    display: flex; align-items: center; gap: 6px;
-  }
+  .popup-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
   .popup-rank {
     width: 22px; height: 22px; border-radius: 50%;
     display: inline-flex; align-items: center; justify-content: center;
     font-size: 0.7rem; font-weight: 800; flex-shrink: 0; color: #fff;
   }
   .popup-price { font-size: 1.15rem; font-weight: 800; margin: 4px 0 6px; }
-  .popup-addr {
-    font-size: 0.75rem; color: var(--popup-addr); text-decoration: none;
-    display: flex; align-items: center; gap: 3px;
-  }
+  .popup-addr { font-size: 0.75rem; color: var(--popup-addr); text-decoration: none; display: flex; align-items: center; gap: 3px; }
   .popup-addr:hover { color: var(--accent); }
 </style>
 </head>
@@ -343,7 +220,12 @@
     <div class="header-top">
       <h1>Döner Rangliste Bamberg</h1>
       <span class="badge">Top 10</span>
-      <button id="theme-toggle" title="Dark/Light Mode" onclick="toggleTheme()">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="tr" onclick="setLang('tr')">TR</button>
+      </div>
+      <button id="theme-toggle" onclick="toggleTheme()">
         <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
           <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
           <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
@@ -355,10 +237,10 @@
         </svg>
       </button>
     </div>
-    <p class="subtitle">En ucuzdan en pahalıya &middot; Stand Mai 2026</p>
+    <p class="subtitle" data-i18n="subtitle"></p>
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('list')">&#9776;&nbsp; Rangliste</button>
-      <button class="tab-btn" onclick="switchTab('map')">&#9679;&nbsp; Karte</button>
+      <button class="tab-btn active" onclick="switchTab('list')">&#9776;&nbsp;<span data-i18n="tab_list"></span></button>
+      <button class="tab-btn" onclick="switchTab('map')">&#9679;&nbsp;<span data-i18n="tab_map"></span></button>
     </div>
   </div>
 </header>
@@ -366,17 +248,14 @@
 <div id="panel-list" class="panel active">
   <div class="inner">
     <div class="list" id="list-root"></div>
-    <p class="foot-note">
-      Preise ohne ~ sind von doeneratlas.de bestätigt &middot; ~ = geschätzter Preis<br/>
-      Adressen anklicken öffnet Google Maps
-    </p>
+    <p class="foot-note" data-i18n-html="foot"></p>
   </div>
 </div>
 
 <div id="panel-map" class="panel">
   <div class="inner">
     <div id="map"></div>
-    <p class="map-note">Pin-Größe entspricht der Platzierung &middot; Nr. 1 = größter Pin &middot; Klicken für Details</p>
+    <p class="map-note" data-i18n="map_note"></p>
   </div>
 </div>
 
@@ -393,6 +272,34 @@ const DATA = [
   { rank: 9,  name: "Orient Imbiss",           price: 8.00, est: true,  address: "Würzburger Str. 55, 96049 Bamberg",        lat: 49.8826, lng: 10.8964 },
   { rank: 10, name: "BamBiss Orient Bamberg",  price: 8.00, est: false, address: "Memmelsdorfer Str. 181, 96052 Bamberg",    lat: 49.9097, lng: 10.9130 },
 ];
+
+/* ── TRANSLATIONS ── */
+const STRINGS = {
+  de: {
+    subtitle:  'Von günstig bis teuer · Stand Mai 2026',
+    tab_list:  'Rangliste',
+    tab_map:   'Karte',
+    foot:      'Preise ohne ~ von doeneratlas.de bestätigt · ~ = geschätzter Preis<br>Adresse anklicken öffnet Google Maps',
+    map_note:  'Pin-Größe entspricht der Platzierung · Nr. 1 = größter Pin · Klicken für Details',
+    estimated: '~geschätzt',
+  },
+  en: {
+    subtitle:  'Cheapest to most expensive · May 2026',
+    tab_list:  'Ranking',
+    tab_map:   'Map',
+    foot:      'Prices without ~ confirmed by doeneratlas.de · ~ = estimated<br>Click an address to open Google Maps',
+    map_note:  'Pin size reflects ranking · No. 1 = largest pin · Click for details',
+    estimated: '~estimated',
+  },
+  tr: {
+    subtitle:  'En ucuzdan en pahalıya · Mayıs 2026',
+    tab_list:  'Sıralama',
+    tab_map:   'Harita',
+    foot:      '~ olmayan fiyatlar doeneratlas.de\'den onaylı · ~ = tahmini fiyat<br>Adrese tıklayınca Google Maps açılır',
+    map_note:  'Pin boyutu sıralamayı gösterir · 1 = en büyük pin · Detay için tıkla',
+    estimated: '~tahmini',
+  },
+};
 
 /* ── MAP state (declared early to avoid TDZ in applyTheme) ── */
 let mapReady = false;
@@ -416,29 +323,61 @@ function toggleTheme() {
   applyTheme(next);
 }
 
-// Init from storage or system preference
+/* ── LANGUAGE ── */
+let currentLang = 'de';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  document.documentElement.lang = lang;
+
+  document.querySelectorAll('.lang-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.lang === lang)
+  );
+
+  const s = STRINGS[lang];
+
+  document.querySelectorAll('[data-i18n]').forEach(el =>
+    el.textContent = s[el.dataset.i18n] ?? ''
+  );
+  document.querySelectorAll('[data-i18n-html]').forEach(el =>
+    el.innerHTML = s[el.dataset.i18nHtml] ?? ''
+  );
+
+  document.querySelectorAll('.est-label').forEach(el =>
+    el.textContent = s.estimated
+  );
+}
+
+/* ── INIT (theme + lang) ── */
 (function () {
-  const saved = localStorage.getItem('theme');
+  const savedTheme = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  applyTheme(saved ? saved === 'dark' : prefersDark);
+  applyTheme(savedTheme ? savedTheme === 'dark' : prefersDark);
+
+  const savedLang = localStorage.getItem('lang');
+  const browserLang = navigator.language.slice(0, 2);
+  const lang = savedLang || (['de','en','tr'].includes(browserLang) ? browserLang : 'de');
+  setLang(lang);
 })();
 
 /* ── LIST ── */
 const root = document.getElementById('list-root');
+const PIN_SVG = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+
 DATA.forEach(r => {
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.address)}`;
   const rbClass = r.rank <= 3 ? `rb-${r.rank}` : 'rb-def';
-  const pin = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
   root.insertAdjacentHTML('beforeend', `
     <div class="item">
       <div class="rank-bubble ${rbClass}">${r.rank}</div>
       <div class="info">
         <div class="name">${r.name}</div>
-        <a href="${mapsUrl}" target="_blank" rel="noopener" class="addr-link">${pin} ${r.address}</a>
+        <a href="${mapsUrl}" target="_blank" rel="noopener" class="addr-link">${PIN_SVG} ${r.address}</a>
       </div>
       <div class="price-col">
         <span class="price-val pv-${r.rank}">${r.price.toFixed(2).replace('.', ',')} €</span>
-        ${r.est ? '<span class="est-label">~geschätzt</span>' : ''}
+        ${r.est ? `<span class="est-label">${STRINGS[currentLang].estimated}</span>` : ''}
       </div>
     </div>
   `);
@@ -446,14 +385,10 @@ DATA.forEach(r => {
 
 /* ── MAP ── */
 const TILES = {
-  light: {
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    attr: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-  },
-  dark: {
-    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    attr: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
-  }
+  light: { url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+           attr: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors' },
+  dark:  { url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+           attr: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>' },
 };
 
 function swapTiles(dark) {
@@ -468,7 +403,6 @@ function swapTiles(dark) {
 function initMap() {
   if (mapReady) return;
   mapReady = true;
-
   leafletMap = L.map('map', { zoomControl: true }).setView([49.897, 10.906], 13);
   swapTiles(darkMode);
 
@@ -482,7 +416,6 @@ function initMap() {
     const fill   = `hsl(${hue},65%,48%)`;
     const fs     = Math.round(size * 0.42);
     const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.address)}`;
-    const pin = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
 
     const icon = L.divIcon({
       className: '',
@@ -493,12 +426,11 @@ function initMap() {
         font-family:-apple-system,sans-serif;font-weight:800;
         font-size:${fs}px;color:#fff;
         box-shadow:0 2px 8px rgba(0,0,0,.3);
-        text-shadow:0 1px 2px rgba(0,0,0,.35);
-        cursor:pointer;
+        text-shadow:0 1px 2px rgba(0,0,0,.35);cursor:pointer;
       ">${r.rank}</div>`,
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2],
-      popupAnchor: [0, -(size / 2 + 4)]
+      popupAnchor: [0, -(size / 2 + 4)],
     });
 
     const popup = `
@@ -508,10 +440,10 @@ function initMap() {
           ${r.name}
         </div>
         <div class="popup-price" style="color:${stroke}">
-          ${r.price.toFixed(2).replace('.', ',')} €${r.est ? ' <span style="font-size:0.6rem;opacity:.5;">~</span>' : ''}
+          ${r.price.toFixed(2).replace('.', ',')} €${r.est ? ' <span style="font-size:.6rem;opacity:.5;">~</span>' : ''}
         </div>
         <a href="${mapsUrl}" target="_blank" rel="noopener" class="popup-addr">
-          ${pin} ${r.address}
+          ${PIN_SVG} ${r.address}
         </a>
       </div>`;
 
