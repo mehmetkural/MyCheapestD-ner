@@ -394,6 +394,11 @@ const DATA = [
   { rank: 10, name: "BamBiss Orient Bamberg",  price: 8.00, est: false, address: "Memmelsdorfer Str. 181, 96052 Bamberg",    lat: 49.9097, lng: 10.9130 },
 ];
 
+/* ── MAP state (declared early to avoid TDZ in applyTheme) ── */
+let mapReady = false;
+let leafletMap = null;
+let tileLayer = null;
+
 /* ── THEME ── */
 let darkMode = false;
 
@@ -440,10 +445,6 @@ DATA.forEach(r => {
 });
 
 /* ── MAP ── */
-let mapReady = false;
-let leafletMap = null;
-let tileLayer = null;
-
 const TILES = {
   light: {
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
