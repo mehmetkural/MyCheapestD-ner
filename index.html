@@ -45,9 +45,7 @@
   }
 
   .header-inner { max-width: 680px; margin: 0 auto; }
-
   .header-top { display: flex; align-items: center; gap: 8px; }
-
   h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.03em; flex: 1; }
 
   .badge {
@@ -58,7 +56,6 @@
     transition: background .25s, border-color .25s;
   }
 
-  /* ── LANG SWITCHER ── */
   .lang-switcher {
     display: flex; border: 1px solid var(--border);
     border-radius: 20px; overflow: hidden; flex-shrink: 0;
@@ -73,11 +70,9 @@
   }
 
   .lang-btn + .lang-btn { border-left: 1px solid var(--border); }
-
   .lang-btn.active { background: var(--accent); color: #fff; }
   .lang-btn:hover:not(.active) { color: var(--text); }
 
-  /* ── THEME TOGGLE ── */
   #theme-toggle {
     width: 32px; height: 32px; border-radius: 50%;
     border: 1px solid var(--border); background: var(--card);
@@ -90,7 +85,6 @@
 
   .subtitle { font-size: 0.8rem; color: var(--muted); margin-top: 3px; transition: color .25s; }
 
-  /* ── TABS ── */
   .tabs { display: flex; margin-top: 18px; gap: 2px; }
 
   .tab-btn {
@@ -103,19 +97,16 @@
   .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
   .tab-btn:hover:not(.active) { color: var(--text); opacity: .7; }
 
-  /* ── PANELS ── */
   .panel { display: none; }
   .panel.active { display: block; }
 
   /* ── LIST ── */
   #panel-list .inner { max-width: 680px; margin: 0 auto; padding: 20px; }
-
   .list { display: flex; flex-direction: column; gap: 9px; }
 
   .item {
     background: var(--card); border-radius: 14px; padding: 14px 16px;
-    display: flex; align-items: center; gap: 14px;
-    box-shadow: var(--shadow);
+    display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow);
     transition: box-shadow .2s, transform .15s, background .25s;
   }
 
@@ -148,7 +139,6 @@
   .addr-link:hover { color: var(--accent); text-decoration: underline; }
 
   .price-col { text-align: right; flex-shrink: 0; }
-
   .price-val { font-weight: 800; font-size: 1.05rem; letter-spacing: -0.03em; }
 
   .est-label {
@@ -188,6 +178,81 @@
     text-align: center; margin-top: 8px; transition: color .25s;
   }
 
+  /* ── INFO PANEL ── */
+  #panel-info .inner { max-width: 680px; margin: 0 auto; padding: 20px; }
+
+  .info-section { margin-bottom: 28px; }
+
+  .section-title {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 12px; transition: color .25s;
+  }
+
+  /* FAQ accordion */
+  .faq-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .faq-item {
+    background: var(--card); border-radius: 12px;
+    box-shadow: var(--shadow); overflow: hidden;
+    transition: box-shadow .2s, background .25s;
+  }
+
+  .faq-q {
+    width: 100%; background: none; border: none; cursor: pointer;
+    padding: 14px 16px; display: flex; align-items: center;
+    justify-content: space-between; gap: 12px;
+    font-size: 0.9rem; font-weight: 600; color: var(--text);
+    text-align: left; transition: color .15s;
+  }
+
+  .faq-q:hover { color: var(--accent); }
+
+  .faq-chevron {
+    flex-shrink: 0; color: var(--muted);
+    transition: transform .2s, color .15s;
+    font-style: normal; font-size: 1rem; line-height: 1;
+  }
+
+  .faq-item.open .faq-chevron { transform: rotate(45deg); color: var(--accent); }
+
+  .faq-a {
+    max-height: 0; overflow: hidden;
+    transition: max-height .25s ease, padding .2s;
+    font-size: 0.85rem; color: var(--muted); line-height: 1.6;
+    padding: 0 16px;
+  }
+
+  .faq-item.open .faq-a { max-height: 200px; padding: 0 16px 14px; }
+
+  /* Contact card */
+  .contact-card {
+    background: var(--card); border-radius: 14px; padding: 20px;
+    box-shadow: var(--shadow); transition: background .25s;
+  }
+
+  .contact-card h3 {
+    font-size: 0.95rem; font-weight: 700;
+    margin-bottom: 6px; letter-spacing: -0.01em;
+  }
+
+  .contact-desc {
+    font-size: 0.83rem; color: var(--muted);
+    line-height: 1.5; margin-bottom: 14px; transition: color .25s;
+  }
+
+  .email-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 10px;
+    padding: 9px 16px; font-size: 0.85rem; font-weight: 600;
+    text-decoration: none; cursor: pointer;
+    transition: opacity .15s, transform .1s;
+  }
+
+  .email-btn:hover { opacity: .88; transform: translateY(-1px); }
+
+  /* leaflet popup */
   .leaflet-popup-content-wrapper {
     border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0,0,0,.2) !important;
@@ -241,6 +306,7 @@
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('list')">&#9776;&nbsp;<span data-i18n="tab_list"></span></button>
       <button class="tab-btn" onclick="switchTab('map')">&#9679;&nbsp;<span data-i18n="tab_map"></span></button>
+      <button class="tab-btn" onclick="switchTab('info')">&#9432;&nbsp;<span data-i18n="tab_info"></span></button>
     </div>
   </div>
 </header>
@@ -259,6 +325,32 @@
   </div>
 </div>
 
+<div id="panel-info" class="panel">
+  <div class="inner">
+
+    <div class="info-section">
+      <p class="section-title" data-i18n="faq_title"></p>
+      <div class="faq-list" id="faq-root"></div>
+    </div>
+
+    <div class="info-section">
+      <p class="section-title" data-i18n="contact_section_title"></p>
+      <div class="contact-card">
+        <h3 data-i18n="contact_title"></h3>
+        <p class="contact-desc" data-i18n="contact_desc"></p>
+        <a id="email-btn" class="email-btn" href="#" target="_blank" rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          <span data-i18n="email_btn"></span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <script>
 const DATA = [
   { rank: 1,  name: "Bamberger Döner",        price: 6.50, est: false, address: "Luitpoldstraße 39, 96052 Bamberg",        lat: 49.8946, lng: 10.9060 },
@@ -273,35 +365,85 @@ const DATA = [
   { rank: 10, name: "BamBiss Orient Bamberg",  price: 8.00, est: false, address: "Memmelsdorfer Str. 181, 96052 Bamberg",    lat: 49.9097, lng: 10.9130 },
 ];
 
+const CONTACT_EMAIL = 'update@doener-bamberg.de';
+
 /* ── TRANSLATIONS ── */
 const STRINGS = {
   de: {
     subtitle:  'Von günstig bis teuer · Stand Mai 2026',
-    tab_list:  'Rangliste',
-    tab_map:   'Karte',
+    tab_list:  'Rangliste', tab_map: 'Karte', tab_info: 'Info',
     foot:      'Preise ohne ~ von doeneratlas.de bestätigt · ~ = geschätzter Preis<br>Adresse anklicken öffnet Google Maps',
     map_note:  'Pin-Größe entspricht der Platzierung · Nr. 1 = größter Pin · Klicken für Details',
     estimated: '~geschätzt',
+    faq_title: 'Häufige Fragen',
+    faq: [
+      { q: 'Woher kommen die Preise?',
+        a: 'Bestätigte Preise (ohne ~) stammen von doeneratlas.de. Die übrigen sind Schätzungen auf Basis regionaler Durchschnittswerte und öffentlicher Quellen.' },
+      { q: 'Wie aktuell sind die Daten?',
+        a: 'Letzte Aktualisierung: Mai 2026. Dönerpreise können sich kurzfristig ändern – bei Abweichungen gerne melden!' },
+      { q: 'Was bedeutet das ~-Symbol?',
+        a: 'Das ~ kennzeichnet geschätzte Preise, die nicht offiziell bestätigt wurden. Der tatsächliche Preis kann abweichen.' },
+      { q: 'Wie kann ich einen neuen Laden vorschlagen?',
+        a: 'Einfach eine E-Mail mit Name, Adresse und aktuellem Preis schicken. Wir prüfen und ergänzen die Liste.' },
+    ],
+    contact_section_title: 'Preisupdate',
+    contact_title: 'Preis melden oder Laden vorschlagen',
+    contact_desc: 'Falscher Preis? Günstiger Geheimtipp? Schreib uns — wir aktualisieren die Liste so schnell wie möglich.',
+    email_subject: 'Döner Preis Update – Bamberg',
+    email_body: 'Restaurant: \nAdresse: \nAktueller Preis: \n\nWeitere Infos:',
+    email_btn: 'E-Mail senden',
   },
   en: {
     subtitle:  'Cheapest to most expensive · May 2026',
-    tab_list:  'Ranking',
-    tab_map:   'Map',
+    tab_list:  'Ranking', tab_map: 'Map', tab_info: 'Info',
     foot:      'Prices without ~ confirmed by doeneratlas.de · ~ = estimated<br>Click an address to open Google Maps',
     map_note:  'Pin size reflects ranking · No. 1 = largest pin · Click for details',
     estimated: '~estimated',
+    faq_title: 'FAQ',
+    faq: [
+      { q: 'Where do the prices come from?',
+        a: 'Confirmed prices (without ~) come from doeneratlas.de. The rest are estimates based on regional averages and public sources.' },
+      { q: 'How up to date is the list?',
+        a: 'Last updated: May 2026. Döner prices can change at any time — report any discrepancies!' },
+      { q: 'What does the ~ symbol mean?',
+        a: '~ marks estimated prices that have not been officially confirmed. The actual price may differ.' },
+      { q: 'How can I suggest a new place?',
+        a: 'Send an email with the name, address, and current price. We\'ll review and add it to the list.' },
+    ],
+    contact_section_title: 'Price Update',
+    contact_title: 'Report a price or suggest a place',
+    contact_desc: 'Wrong price? Hidden gem? Write to us — we\'ll update the list as soon as possible.',
+    email_subject: 'Döner Price Update – Bamberg',
+    email_body: 'Restaurant: \nAddress: \nCurrent price: \n\nAdditional info:',
+    email_btn: 'Send email',
   },
   tr: {
     subtitle:  'En ucuzdan en pahalıya · Mayıs 2026',
-    tab_list:  'Sıralama',
-    tab_map:   'Harita',
+    tab_list:  'Sıralama', tab_map: 'Harita', tab_info: 'Bilgi',
     foot:      '~ olmayan fiyatlar doeneratlas.de\'den onaylı · ~ = tahmini fiyat<br>Adrese tıklayınca Google Maps açılır',
     map_note:  'Pin boyutu sıralamayı gösterir · 1 = en büyük pin · Detay için tıkla',
     estimated: '~tahmini',
+    faq_title: 'Sık Sorulan Sorular',
+    faq: [
+      { q: 'Fiyatlar nereden geliyor?',
+        a: '~ işareti olmayan onaylı fiyatlar doeneratlas.de\'den alınmaktadır. Diğerleri bölgesel ortalamalara ve kamuya açık kaynaklara dayalı tahminlerdir.' },
+      { q: 'Veriler ne kadar güncel?',
+        a: 'Son güncelleme: Mayıs 2026. Döner fiyatları kısa sürede değişebilir — farklılık görürsen bildir!' },
+      { q: '~ sembolü ne anlama geliyor?',
+        a: '~ resmi olarak teyit edilmemiş tahmini fiyatları gösterir. Gerçek fiyat farklı olabilir.' },
+      { q: 'Yeni bir yer nasıl önerebilirim?',
+        a: 'İsim, adres ve güncel fiyatla birlikte e-posta gönder. İnceleyip listeye ekleyelim.' },
+    ],
+    contact_section_title: 'Fiyat Güncelleme',
+    contact_title: 'Fiyat bildir veya yer öner',
+    contact_desc: 'Yanlış fiyat mı var? Gizli bir ucuz yer mi buldun? Bize yaz — listeyi en kısa sürede güncelleyelim.',
+    email_subject: 'Döner Fiyat Güncellemesi – Bamberg',
+    email_body: 'Restoran: \nAdres: \nGüncel fiyat: \n\nEk bilgi:',
+    email_btn: 'E-posta gönder',
   },
 };
 
-/* ── MAP state (declared early to avoid TDZ in applyTheme) ── */
+/* ── MAP state ── */
 let mapReady = false;
 let leafletMap = null;
 let tileLayer = null;
@@ -343,13 +485,42 @@ function setLang(lang) {
   document.querySelectorAll('[data-i18n-html]').forEach(el =>
     el.innerHTML = s[el.dataset.i18nHtml] ?? ''
   );
-
   document.querySelectorAll('.est-label').forEach(el =>
     el.textContent = s.estimated
   );
+
+  // Update mailto link
+  const subject = encodeURIComponent(s.email_subject);
+  const body    = encodeURIComponent(s.email_body);
+  document.getElementById('email-btn').href =
+    `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+
+  // Re-render FAQ
+  renderFaq(lang);
 }
 
-/* ── INIT (theme + lang) ── */
+/* ── FAQ ── */
+function renderFaq(lang) {
+  const faqRoot = document.getElementById('faq-root');
+  faqRoot.innerHTML = '';
+  STRINGS[lang].faq.forEach((item, i) => {
+    faqRoot.insertAdjacentHTML('beforeend', `
+      <div class="faq-item" id="faq-${i}">
+        <button class="faq-q" onclick="toggleFaq(${i})">
+          <span>${item.q}</span>
+          <i class="faq-chevron">+</i>
+        </button>
+        <div class="faq-a">${item.a}</div>
+      </div>
+    `);
+  });
+}
+
+function toggleFaq(i) {
+  document.getElementById(`faq-${i}`).classList.toggle('open');
+}
+
+/* ── INIT ── */
 (function () {
   const savedTheme = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -357,8 +528,7 @@ function setLang(lang) {
 
   const savedLang = localStorage.getItem('lang');
   const browserLang = navigator.language.slice(0, 2);
-  const lang = savedLang || (['de','en','tr'].includes(browserLang) ? browserLang : 'de');
-  setLang(lang);
+  setLang(savedLang || (['de','en','tr'].includes(browserLang) ? browserLang : 'de'));
 })();
 
 /* ── LIST ── */
@@ -452,11 +622,13 @@ function initMap() {
 }
 
 function switchTab(tab) {
+  const tabs = ['list', 'map', 'info'];
   document.querySelectorAll('.tab-btn').forEach((b, i) =>
-    b.classList.toggle('active', (tab === 'list') === (i === 0))
+    b.classList.toggle('active', tabs[i] === tab)
   );
-  document.getElementById('panel-list').classList.toggle('active', tab === 'list');
-  document.getElementById('panel-map').classList.toggle('active', tab === 'map');
+  tabs.forEach(t =>
+    document.getElementById(`panel-${t}`).classList.toggle('active', t === tab)
+  );
   if (tab === 'map') setTimeout(initMap, 80);
 }
 </script>
