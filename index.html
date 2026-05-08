@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Döner Rangliste Bamberg</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f6f3ef;
+    --card: #ffffff;
+    --border: #ede9e3;
+    --text: #1c1a18;
+    --muted: #9a9590;
+    --accent: #c8773a;
+    --shadow: 0 1px 4px rgba(0,0,0,.07);
+    --shadow-hover: 0 6px 18px rgba(0,0,0,.11);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 22px 20px 0;
+  }
+
+  .header-inner {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  h1 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: #fdf0e6;
+    color: var(--accent);
+    border: 1px solid #f5d9bc;
+    border-radius: 20px;
+    padding: 2px 8px;
+    letter-spacing: 0.02em;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    margin-top: 18px;
+    gap: 2px;
+  }
+
+  .tab-btn {
+    padding: 9px 18px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+    letter-spacing: -0.01em;
+  }
+
+  .tab-btn.active {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-btn:hover:not(.active) { color: #555; }
+
+  /* ── PANELS ── */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── LIST PANEL ── */
+  #panel-list .inner {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .list { display: flex; flex-direction: column; gap: 9px; }
+
+  .item {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow);
+    transition: box-shadow .2s, transform .15s;
+    cursor: default;
+  }
+
+  .item:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+  }
+
+  /* rank bubble */
+  .rank-bubble {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .rb-1  { background: #FFD700; color: #6b4c00; }
+  .rb-2  { background: #E0E0E0; color: #444; }
+  .rb-3  { background: #E8A070; color: #fff; }
+  .rb-def { background: #f0ede8; color: #777; }
+
+  /* info */
+  .info { flex: 1; min-width: 0; }
+
+  .name {
+    font-weight: 600;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .addr-link {
+    font-size: 0.77rem;
+    color: var(--muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 2px;
+    transition: color .15s;
+  }
+
+  .addr-link:hover { color: var(--accent); text-decoration: underline; }
+
+  /* price */
+  .price-col {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .price-val {
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: -0.03em;
+  }
+
+  .est-label {
+    font-size: 0.62rem;
+    color: #ccc;
+    display: block;
+    margin-top: 1px;
+  }
+
+  /* price gradient by rank */
+  .pv-1  { color: #1a9e50; }
+  .pv-2  { color: #2aad50; }
+  .pv-3  { color: #44b840; }
+  .pv-4  { color: #72b820; }
+  .pv-5  { color: #9cb820; }
+  .pv-6  { color: #c89820; }
+  .pv-7  { color: #c87820; }
+  .pv-8  { color: #c85e20; }
+  .pv-9  { color: #c84420; }
+  .pv-10 { color: #c82a20; }
+
+  .foot-note {
+    font-size: 0.72rem;
+    color: #ccc;
+    text-align: center;
+    margin-top: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── MAP PANEL ── */
+  #panel-map .inner {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 16px 20px 20px;
+  }
+
+  #map {
+    height: calc(100vh - 158px);
+    min-height: 380px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  .map-note {
+    font-size: 0.72rem;
+    color: #ccc;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  /* leaflet popup tweak */
+  .leaflet-popup-content-wrapper {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15) !important;
+  }
+
+  .leaflet-popup-content { margin: 12px 14px !important; }
+
+  .popup-inner { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-width: 170px; }
+  .popup-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+  .popup-rank {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 800; flex-shrink: 0;
+    color: #fff;
+  }
+  .popup-price { font-size: 1.15rem; font-weight: 800; margin: 4px 0 6px; }
+  .popup-addr { font-size: 0.75rem; color: #888; text-decoration: none; display: flex; align-items: center; gap: 3px; }
+  .popup-addr:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-top">
+      <h1>Döner Rangliste Bamberg</h1>
+      <span class="badge">Top 10</span>
+    </div>
+    <p class="subtitle">En ucuzdan en pahalıya &middot; Stand Mai 2026</p>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('list')">&#9776;&nbsp; Rangliste</button>
+      <button class="tab-btn" onclick="switchTab('map')">&#9679;&nbsp; Karte</button>
+    </div>
+  </div>
+</header>
+
+<div id="panel-list" class="panel active">
+  <div class="inner">
+    <div class="list" id="list-root"></div>
+    <p class="foot-note">
+      Preise ohne ~ sind von doeneratlas.de bestätigt &middot; ~ = geschätzter Preis<br/>
+      Adressen anklicken öffnet Google Maps
+    </p>
+  </div>
+</div>
+
+<div id="panel-map" class="panel">
+  <div class="inner">
+    <div id="map"></div>
+    <p class="map-note">Pin-Größe entspricht der Platzierung &middot; Nr. 1 = größter Pin &middot; Klicken für Details</p>
+  </div>
+</div>
+
+<script>
+const DATA = [
+  {
+    rank: 1, name: "Bamberger Döner",
+    price: 6.50, est: false,
+    address: "Luitpoldstraße 39, 96052 Bamberg",
+    lat: 49.8946, lng: 10.9060
+  },
+  {
+    rank: 2, name: "Buhara",
+    price: 6.90, est: true,
+    address: "Fleischstraße 1, 96047 Bamberg",
+    lat: 49.8993, lng: 10.9028
+  },
+  {
+    rank: 3, name: "Original Berliner Döner",
+    price: 6.90, est: true,
+    address: "Luitpoldstraße 36, 96052 Bamberg",
+    lat: 49.8948, lng: 10.9055
+  },
+  {
+    rank: 4, name: "Döner-Express",
+    price: 7.00, est: false,
+    address: "Ludwigstraße 6, 96052 Bamberg",
+    lat: 49.9015, lng: 10.9012
+  },
+  {
+    rank: 5, name: "Euro Döner",
+    price: 7.00, est: true,
+    address: "Pödeldorfer Str. 146, 96050 Bamberg",
+    lat: 49.9053, lng: 10.9246
+  },
+  {
+    rank: 6, name: "King Kebap Haus",
+    price: 7.50, est: true,
+    address: "Luitpoldstraße 48, 96052 Bamberg",
+    lat: 49.8942, lng: 10.9064
+  },
+  {
+    rank: 7, name: "Antep Döner",
+    price: 7.50, est: true,
+    address: "Obere Königsstraße 14, 96047 Bamberg",
+    lat: 49.8999, lng: 10.8988
+  },
+  {
+    rank: 8, name: "Imbiss Marmaris",
+    price: 7.50, est: true,
+    address: "Obere Königstraße 9, 96052 Bamberg",
+    lat: 49.9001, lng: 10.8993
+  },
+  {
+    rank: 9, name: "Orient Imbiss",
+    price: 8.00, est: true,
+    address: "Würzburger Str. 55, 96049 Bamberg",
+    lat: 49.8826, lng: 10.8964
+  },
+  {
+    rank: 10, name: "BamBiss Orient Bamberg",
+    price: 8.00, est: false,
+    address: "Memmelsdorfer Str. 181, 96052 Bamberg",
+    lat: 49.9097, lng: 10.9130
+  },
+];
+
+/* ── LIST ── */
+const root = document.getElementById('list-root');
+DATA.forEach(r => {
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.address)}`;
+  const rbClass = r.rank <= 3 ? `rb-${r.rank}` : 'rb-def';
+  root.insertAdjacentHTML('beforeend', `
+    <div class="item">
+      <div class="rank-bubble ${rbClass}">${r.rank}</div>
+      <div class="info">
+        <div class="name">${r.name}</div>
+        <a href="${mapsUrl}" target="_blank" rel="noopener" class="addr-link">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          ${r.address}
+        </a>
+      </div>
+      <div class="price-col">
+        <span class="price-val pv-${r.rank}">${r.price.toFixed(2).replace('.', ',')} €</span>
+        ${r.est ? '<span class="est-label">~geschätzt</span>' : ''}
+      </div>
+    </div>
+  `);
+});
+
+/* ── MAP ── */
+let mapReady = false;
+
+function initMap() {
+  if (mapReady) return;
+  mapReady = true;
+
+  const map = L.map('map', { zoomControl: true }).setView([49.897, 10.906], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
+
+  const RMAX = 26, RMIN = 9;
+
+  DATA.forEach(r => {
+    const ratio = 1 - (r.rank - 1) / 9;
+    const radius = Math.round(RMIN + ratio * (RMAX - RMIN));
+    const hue = Math.round(118 * ratio);
+    const stroke = `hsl(${hue},65%,38%)`;
+    const fill   = `hsl(${hue},65%,52%)`;
+
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.address)}`;
+
+    const popup = `
+      <div class="popup-inner">
+        <div class="popup-name">
+          <span class="popup-rank" style="background:${fill}">${r.rank}</span>
+          ${r.name}
+        </div>
+        <div class="popup-price" style="color:${stroke}">
+          ${r.price.toFixed(2).replace('.', ',')} €${r.est ? ' <span style="font-size:0.6rem;color:#bbb;">~</span>' : ''}
+        </div>
+        <a href="${mapsUrl}" target="_blank" rel="noopener" class="popup-addr">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          ${r.address}
+        </a>
+      </div>`;
+
+    L.circleMarker([r.lat, r.lng], {
+      radius, color: stroke, fillColor: fill,
+      fillOpacity: 0.88, weight: 2.5
+    }).bindPopup(popup).addTo(map);
+  });
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', (tab === 'list' && i === 0) || (tab === 'map' && i === 1));
+  });
+  document.getElementById('panel-list').classList.toggle('active', tab === 'list');
+  document.getElementById('panel-map').classList.toggle('active', tab === 'map');
+  if (tab === 'map') setTimeout(initMap, 80);
+}
+</script>
+</body>
+</html>
