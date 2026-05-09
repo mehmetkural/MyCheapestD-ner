@@ -318,9 +318,11 @@ function swapTiles(dark) {
   tileLayer.addTo(leafletMap); tileLayer.bringToBack();
 }
 
+const BAMBERG_BOUNDS=[[49.84,10.83],[49.94,10.97]];
+
 function initMap() {
   if(mapReady) return; mapReady=true;
-  leafletMap=L.map('map',{zoomControl:true}).setView(MAP_CENTER,13);
+  leafletMap=L.map('map',{zoomControl:true,minZoom:12,maxBounds:BAMBERG_BOUNDS,maxBoundsViscosity:1.0}).setView(MAP_CENTER,13);
   swapTiles(darkMode);
   const SMAX=52,SMIN=28;
   DATA.forEach(r=>{
